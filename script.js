@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const ABSOLUTE_MAX_LEVELS = { 'townHall': 2, 'goldMine': 4, 'elixirCollector': 4 };
     const TOWN_HALL_UNLOCKS = {
-        0: { maxBuildingLevels: {}, buildingCaps: {}, newBuildingsUnlocked: [] },
+        0: { maxBuildingLevels: {}, buildingCaps: { 'townHall': 1 }, newBuildingsUnlocked: [] }, // Corrected line
         1: { maxBuildingLevels: { 'goldMine': 2, 'elixirCollector': 2, 'townHall': 1 }, buildingCaps: { 'townHall': 1, 'goldMine': 3, 'elixirCollector': 3 }, newBuildingsUnlocked: ['goldMine', 'elixirCollector'] },
         2: { maxBuildingLevels: { 'goldMine': 4, 'elixirCollector': 4, 'townHall': 2 }, buildingCaps: { 'townHall': 1, 'goldMine': 5, 'elixirCollector': 5 } }
     };
@@ -62,20 +62,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCellFromCoordinates(clickX, clickY) {
         // Adjust for padding of the container if any (using 0 here as padding is on main)
-        const containerRect = buildingsContainer.getBoundingClientRect();
-        const x = clickX - buildingsContainer.clientLeft; // Relative to container's content edge
+        // const containerRect = buildingsContainer.getBoundingClientRect(); // Not needed if using clientLeft/Top
+        const x = clickX - buildingsContainer.clientLeft;
         const y = clickY - buildingsContainer.clientTop;
 
-        // Calculate row and col based on cell size and gap
-        // Each cell effectively occupies CELL_SIZE + GAP_SIZE, but the last one doesn't have a trailing gap in its space.
         const col = Math.floor(x / (CELL_SIZE + GAP_SIZE));
         const row = Math.floor(y / (CELL_SIZE + GAP_SIZE));
 
-        // Ensure calculated row/col are within grid bounds (0 to GRID_COLS-1, 0 to GRID_ROWS-1)
         if (row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLS) {
             return { row, col };
         }
-        return null; // Click was outside valid grid cell areas (e.g., in gaps if not handled carefully or outside bounds)
+        return null;
     }
 
 
@@ -86,7 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function findBuildingById(id) { return villageBuildings.find(b => b.id === id); }
     function getBuildingCap(type) { const thLvl = getCurrentTownHallLevel(); return TOWN_HALL_UNLOCKS[thLvl]?.buildingCaps[type] || 0; }
     function getMaxLevelForBuilding(type) { const thLvl = getCurrentTownHallLevel(); if (type === 'townHall') return ABSOLUTE_MAX_LEVELS.townHall; return TOWN_HALL_UNLOCKS[thLvl]?.maxBuildingLevels[type] || 0; }
-    function isBuildingTypeUnlocked(type) { const thLvl = getCurrentTownHallLevel(); if (type === 'townHall' && thLvl === 0) return true; return TOWN_HALL_UNLOCKS[thLvl]?.newBuildingsUnlocked?.includes(type) || (TOWN_HALL_UNLOCKS[thLvl]?.buildingCaps[type] > 0); }
+    function isBuildingTypeUnlocked(type) {
+        const thLvl = getCurrentTownHallLevel();
+        // Town hall is always "unlocked" to be built if it doesn't exist.
+        if (type === 'townHall' && !getTownHallObject()) return true;
+        // For other buildings, check newBuildingsUnlocked array or if it has a cap defined for current TH level
+        return TOWN_HALL_UNLOCKS[thLvl]?.newBuildingsUnlocked?.includes(type) || (TOWN_HALL_UNLOCKS[thLvl]?.buildingCaps[type] > 0);
+    }
 
     // --- Resource Management (remains the same) ---
     function updateResourceDisplay() { goldAmountSpan.textContent = gold; elixirAmountSpan.textContent = elixir; updateAllButtonStates(); }
@@ -110,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!upgradeButton) {
             upgradeButton = document.createElement('button');
             upgradeButton.classList.add('upgrade-btn');
-            upgradeButton.setAttribute('data-building-id', building.id);
+            upgradeButton.setAttribute('data-building-id', String(building.id)); // Ensure ID is string for attribute
             buildingDiv.appendChild(upgradeButton);
         }
 
@@ -120,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (building.level >= currentMaxLvl) { upgradeButton.textContent = `TH Lvl Up Req.`; upgradeButton.disabled = true; }
         else { const cost = UPGRADE_COSTS[building.type]?.[building.level]; if (cost) { upgradeButton.textContent = `Upgrade (G:${cost.gold}, E:${cost.elixir})`; upgradeButton.disabled = gold < cost.gold || elixir < cost.elixir; } else { upgradeButton.textContent = 'Error'; upgradeButton.disabled = true; } }
 
-        // Handle selection class for movement
         if (selectedBuildingIdForMove === building.id) {
             buildingDiv.classList.add('selected-for-move');
         } else {
@@ -140,46 +142,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateAllButtonStates() {
         updateBuildButtonStates();
-        villageBuildings.forEach(b => updateBuildingElementDOM(b)); // Ensures selection class is also updated
+        villageBuildings.forEach(b => updateBuildingElementDOM(b));
     }
 
-    function updateBuildButtonStates() { /* ... (remains largely the same) ... */
+    function updateBuildButtonStates() {
         const thLvl = getCurrentTownHallLevel();
         const townHallExists = !!getTownHallObject();
 
-        buildTownHallBtn.disabled = townHallExists && countBuildingsByType('townHall') >= getBuildingCap('townHall');
-        buildTownHallBtn.textContent = (townHallExists) ? 'Town Hall Built' : 'Build Town Hall (Free)';
+        // Town Hall Button
+        // Cap for TH is 1. It's either built or not. If built, button is disabled.
+        // The getBuildingCap('townHall') for TH Lvl 0 is now 1, and for TH Lvl 1 is also 1.
+        buildTownHallBtn.disabled = townHallExists;
+        buildTownHallBtn.textContent = townHallExists ? 'Town Hall Built' : 'Build Town Hall (Free)';
 
         ['goldMine', 'elixirCollector'].forEach(type => {
             const btn = type === 'goldMine' ? buildGoldMineBtn : buildElixirCollectorBtn;
             const cost = BUILDING_COSTS[type];
-            const cap = getBuildingCap(type);
+            const cap = getBuildingCap(type); // This will be 0 if TH Lvl 0 for these types.
             const count = countBuildingsByType(type);
-            const unlocked = isBuildingTypeUnlocked(type);
+            const unlocked = isBuildingTypeUnlocked(type); // Checks if TH Lvl > 0 for these.
 
             btn.disabled = !unlocked || !townHallExists || gold < cost.gold || elixir < cost.elixir || count >= cap;
 
-            if (!unlocked && townHallExists) {
+            if (!townHallExists) { // Highest priority for disabling if no TH
+                 btn.textContent = `Build ${type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, ' $1')} (Requires TH)`;
+                 btn.disabled = true;
+            } else if (!unlocked) { // TH exists but this building type not yet unlocked
                 btn.textContent = `${type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, ' $1')} (TH Lvl Req.)`;
-            } else if (townHallExists && count >= cap) {
+            } else if (count >= cap) { // Unlocked, TH exists, but cap reached
                 btn.textContent = `${type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, ' $1')} (Max ${cap})`;
-            } else {
+            } else { // Available to build
                 btn.textContent = `Build ${type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, ' $1')} (Cost: ${type === 'goldMine' ? cost.elixir + "E" : cost.gold + "G"})`;
             }
         });
-
-        if (!townHallExists) {
-            buildGoldMineBtn.disabled = true;
-            buildElixirCollectorBtn.disabled = true;
-        }
     }
 
-    // --- Building Construction Logic (remains largely the same, uses findNextAvailableCell) ---
     function handleBuildRequest(type) {
         const thLvl = getCurrentTownHallLevel();
-        if (type !== 'townHall' && thLvl === 0) { alert("Build a Town Hall first!"); return; }
-        if (!isBuildingTypeUnlocked(type)) { alert(`${type} not unlocked.`); return; }
-        if (countBuildingsByType(type) >= getBuildingCap(type)) { alert(`${type} limit reached.`); return; }
+        // If trying to build something other than TH, and TH doesn't exist.
+        if (type !== 'townHall' && !getTownHallObject()) { alert("Build a Town Hall first!"); return; }
+
+        // Check if the building type is unlocked at the current TH level (or if it's the TH itself).
+        if (!isBuildingTypeUnlocked(type)) {
+            alert(`${type.charAt(0).toUpperCase() + type.slice(1)} is not unlocked at current Town Hall level.`);
+            return;
+        }
+
+        // Check against building caps.
+        // For the first Town Hall, countBuildingsByType('townHall') is 0, getBuildingCap('townHall') is 1 (from TH_UNLOCKS[0]). So 0 < 1 is true.
+        if (countBuildingsByType(type) >= getBuildingCap(type)) {
+            alert(`${type.charAt(0).toUpperCase() + type.slice(1)} limit reached.`);
+            return;
+        }
 
         const availableCell = findNextAvailableCell();
         if (!availableCell) { alert("No empty space in the village!"); return; }
@@ -195,16 +209,13 @@ document.addEventListener('DOMContentLoaded', () => {
     buildGoldMineBtn.addEventListener('click', () => handleBuildRequest('goldMine'));
     buildElixirCollectorBtn.addEventListener('click', () => handleBuildRequest('elixirCollector'));
 
-    // --- Building Upgrade & Movement Logic ---
     buildingsContainer.addEventListener('click', (event) => {
         const clickedElement = event.target;
 
-        // Case 1: Clicked on an Upgrade Button
         if (clickedElement.classList.contains('upgrade-btn')) {
             const buildingId = parseInt(clickedElement.getAttribute('data-building-id'));
             const building = findBuildingById(buildingId);
             if (!building) return;
-            // ... (upgrade logic remains the same)
             const currentMaxLvl = getMaxLevelForBuilding(building.type);
             const absoluteMaxLvl = ABSOLUTE_MAX_LEVELS[building.type];
             if (building.level >= absoluteMaxLvl) { alert("Max level."); return; }
@@ -213,25 +224,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!costDetails) { console.error("Upgrade cost error"); alert("Cannot upgrade."); return; }
             if (spendResources(costDetails.gold, costDetails.elixir)) { building.level++; updateAllButtonStates(); }
             else { alert("Not enough resources."); }
-            return; // Handled upgrade click
+            return;
         }
 
-        // Case 2: Clicked on a Building (for selection/deselection for move)
         const clickedBuildingDiv = clickedElement.closest('.building');
         if (clickedBuildingDiv) {
             const clickedBuildingId = parseInt(clickedBuildingDiv.getAttribute('data-building-id'));
-            if (selectedBuildingIdForMove === null) { // Not in move mode, select this building
+            if (selectedBuildingIdForMove === null) {
                 selectedBuildingIdForMove = clickedBuildingId;
-            } else if (selectedBuildingIdForMove === clickedBuildingId) { // Clicked selected building again, deselect
+            } else if (selectedBuildingIdForMove === clickedBuildingId) {
                 selectedBuildingIdForMove = null;
-            } else { // A different building was selected, switch selection
+            } else {
                 selectedBuildingIdForMove = clickedBuildingId;
             }
-            updateAllButtonStates(); // Re-render to apply/remove 'selected-for-move' class
-            return; // Handled building selection click
+            updateAllButtonStates();
+            return;
         }
 
-        // Case 3: Clicked on an Empty Grid Cell (for move destination)
         if (selectedBuildingIdForMove !== null) {
             const cell = getCellFromCoordinates(event.offsetX, event.offsetY);
             if (cell) {
@@ -240,37 +249,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (buildingToMove) {
                         buildingToMove.gridPosition.row = cell.row;
                         buildingToMove.gridPosition.col = cell.col;
-                        selectedBuildingIdForMove = null; // Deselect after move
-                        updateAllButtonStates(); // Re-render all to reflect move and deselection
+                        selectedBuildingIdForMove = null;
+                        updateAllButtonStates();
                     }
                 } else {
-                    // Clicked on an occupied cell, maybe deselect or do nothing
-                    // For simplicity, let's deselect to cancel the move intent
                     selectedBuildingIdForMove = null;
                     updateAllButtonStates();
                     alert("Cannot move to an occupied cell.");
                 }
             } else {
-                // Clicked outside any valid cell (e.g. gap), deselect
                 selectedBuildingIdForMove = null;
                 updateAllButtonStates();
             }
         }
     });
 
-    // --- Building Object Creation (remains the same) ---
     function createBuildingObject(type, gridPos) { const newBuilding = { id: nextBuildingId++, type: type, level: 1, gridPosition: gridPos ? { row: gridPos.row, col: gridPos.col } : null }; villageBuildings.push(newBuilding); return newBuilding; }
 
-    // --- Global Game Loop for Resource Generation (remains the same) ---
     setInterval(() => { let g=0, e=0; villageBuildings.forEach(b => { if (b.type === 'goldMine') g+=(b.level*10); if (b.type === 'elixirCollector') e+=(b.level*10); }); gainResources(g,e); }, 5000);
 
-    // Escape key to cancel move
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && selectedBuildingIdForMove !== null) {
             selectedBuildingIdForMove = null;
-            updateAllButtonStates(); // Re-render to remove selection class
+            updateAllButtonStates();
         }
     });
 
-    updateAllButtonStates(); // Initial call
+    updateAllButtonStates();
 });

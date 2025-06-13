@@ -14,6 +14,7 @@ header {
 
 main {
     padding: 1em;
+    padding-bottom: 70px; /* Ensure space for fixed footer */
 }
 
 #resource-display, #game-area, #actions-panel {
@@ -25,24 +26,45 @@ main {
 }
 
 #buildings-container {
-    display: flex; /* Arrange buildings in a row */
-    flex-wrap: wrap; /* Allow wrapping to next line if needed */
-    gap: 10px; /* Space between buildings */
+    display: grid;
+    grid-template-columns: repeat(5, 100px); /* 5 columns, 100px each */
+    grid-template-rows: repeat(5, 100px);    /* 5 rows, 100px each */
+    gap: 5px;
     padding: 10px;
-    min-height: 100px; /* Ensure it has some height even when empty */
+    min-height: 515px; /* 5*100 + 4*5 + 2*10 (padding) */
+    width: 515px; /* 5*100 + 4*5 + 2*10 (padding) */
     border: 1px dashed #ccc;
+    background-color: #e0e0e0; /* Light gray background for the grid area */
+    position: relative; /* For offset calculations if needed, and for potential absolute positioned overlays */
 }
 
 .building {
-    width: 80px;
-    height: 80px;
+    /* width and height are now controlled by grid cell size, but can set min/max if needed */
     border: 2px solid #666;
     border-radius: 4px;
     display: flex;
+    flex-direction: column; /* Stack text and button vertically */
     justify-content: center;
     align-items: center;
     text-align: center;
     font-size: 0.8em;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    overflow: hidden; /* Prevent content from spilling out */
+    cursor: pointer; /* Indicate buildings are clickable */
+}
+
+.building.selected-for-move {
+    outline: 3px dashed #00cc00; /* Bright green dashed outline */
+    box-shadow: 0 0 15px rgba(0,200,0,0.7);
+    cursor: grabbing; /* Indicate it's being "held" */
+}
+
+
+.building .upgrade-btn {
+    font-size: 0.8em;
+    padding: 3px 5px;
+    margin-top: 5px;
+    cursor: pointer; /* Ensure upgrade buttons also show pointer */
 }
 
 .town-hall { background-color: #a0522d; color: white; }

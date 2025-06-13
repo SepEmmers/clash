@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Clash Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>My Village</h1>
+    </header>
+
+    <main>
+        <div id="resource-display">
+            <p>Gold: <span id="gold-amount">0</span></p>
+            <p>Elixir: <span id="elixir-amount">0</span></p>
+        </div>
+
+        <div id="game-area">
+            <h2>Village</h2>
+            <div id="buildings-container">
+                <!-- Buildings will be added here by JavaScript -->
+            </div>
+        </div>
+
+        <div id="actions-panel">
+            <h2>Actions</h2>
+            <button id="build-town-hall-btn">Build Town Hall (Free)</button>
+            <button id="build-gold-mine-btn">Build Gold Mine (Cost: 50 Elixir)</button>
+            <button id="build-elixir-collector-btn">Build Elixir Collector (Cost: 50 Gold)</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>Simple Clash Game - Alpha</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

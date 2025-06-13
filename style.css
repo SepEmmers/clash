@@ -1,0 +1,81 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 1em 0;
+    text-align: center;
+}
+
+main {
+    padding: 1em;
+}
+
+#resource-display, #game-area, #actions-panel {
+    background-color: white;
+    margin-bottom: 1em;
+    padding: 1em;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#buildings-container {
+    display: flex; /* Arrange buildings in a row */
+    flex-wrap: wrap; /* Allow wrapping to next line if needed */
+    gap: 10px; /* Space between buildings */
+    padding: 10px;
+    min-height: 100px; /* Ensure it has some height even when empty */
+    border: 1px dashed #ccc;
+}
+
+.building {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #666;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 0.8em;
+}
+
+.town-hall { background-color: #a0522d; color: white; }
+.gold-mine { background-color: #ffd700; }
+.elixir-collector { background-color: #dda0dd; }
+
+
+button {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button:hover {
+    background-color: #4cae4c;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+footer {
+    text-align: center;
+    padding: 1em 0;
+    background-color: #333;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}

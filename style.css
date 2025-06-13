@@ -1,103 +1,203 @@
 body {
-    font-family: sans-serif;
+    font-family: 'Verdana', sans-serif;
     margin: 0;
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: #D2B48C; /* Earthy tan */
+    color: #4A3B31; /* Darker brown for text */
 }
 
 header {
-    background-color: #333;
-    color: white;
+    background-color: #8B4513; /* SaddleBrown - a darker earthy tone */
+    color: #F5F5DC; /* Beige - for contrast */
     padding: 1em 0;
     text-align: center;
+    border-bottom: 3px solid #5C3317; /* Darker brown border */
 }
 
-main {
+main { /* This is the main village view container */
     padding: 1em;
-    padding-bottom: 70px; /* Ensure space for fixed footer */
+    padding-bottom: 80px; /* Ensure space for fixed footer */
 }
 
 #resource-display, #game-area, #actions-panel {
-    background-color: white;
-    margin-bottom: 1em;
-    padding: 1em;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background-color: #F5F5DC; /* Beige - parchment like */
+    margin-bottom: 1.5em; /* Increased margin */
+    padding: 1.5em;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 6px 20px rgba(0,0,0,0.19); /* More pronounced shadow */
+    border: 1px solid #A0522D; /* Sienna border */
 }
+
+#resource-display p {
+    margin: 0.5em 0;
+    font-size: 1.1em;
+}
+
 
 #buildings-container {
     display: grid;
-    grid-template-columns: repeat(5, 100px); /* 5 columns, 100px each */
-    grid-template-rows: repeat(5, 100px);    /* 5 rows, 100px each */
-    gap: 5px;
+    grid-template-columns: repeat(5, 100px);
+    grid-template-rows: repeat(5, 100px);
+    gap: 8px;
     padding: 10px;
-    min-height: 515px; /* 5*100 + 4*5 + 2*10 (padding) */
-    width: 515px; /* 5*100 + 4*5 + 2*10 (padding) */
-    border: 1px dashed #ccc;
-    background-color: #e0e0e0; /* Light gray background for the grid area */
-    position: relative; /* For offset calculations if needed, and for potential absolute positioned overlays */
+    min-height: 532px;
+    width: 532px;
+    border: 2px solid #8B4513;
+    background-color: #C19A6B;
+    position: relative;
+    border-radius: 5px;
 }
 
 .building {
-    /* width and height are now controlled by grid cell size, but can set min/max if needed */
-    border: 2px solid #666;
-    border-radius: 4px;
+    border: 3px solid #654321;
+    border-radius: 6px;
     display: flex;
-    flex-direction: column; /* Stack text and button vertically */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    font-size: 0.8em;
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-    overflow: hidden; /* Prevent content from spilling out */
-    cursor: pointer; /* Indicate buildings are clickable */
+    font-size: 0.85em;
+    box-sizing: border-box;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+    color: #FFFFFF;
 }
 
 .building.selected-for-move {
-    outline: 3px dashed #00cc00; /* Bright green dashed outline */
-    box-shadow: 0 0 15px rgba(0,200,0,0.7);
-    cursor: grabbing; /* Indicate it's being "held" */
+    outline: 4px dashed #32CD32;
+    box-shadow: 0 0 20px rgba(50,205,50,0.8), inset 0 0 5px rgba(0,0,0,0.3);
+    cursor: grabbing;
 }
 
-
-.building .upgrade-btn {
-    font-size: 0.8em;
-    padding: 3px 5px;
-    margin-top: 5px;
-    cursor: pointer; /* Ensure upgrade buttons also show pointer */
-}
-
-.town-hall { background-color: #a0522d; color: white; }
-.gold-mine { background-color: #ffd700; }
-.elixir-collector { background-color: #dda0dd; }
+/* Specific building colors */
+.town-hall, .npc-townhall { background-color: #A0522D; } /* Ensure NPC buildings also get base colors */
+.gold-mine, .npc-goldmine { background-color: #DAA520; }
+.elixir-collector, .npc-elixircollector { background-color: #BA55D3; }
+.barracks { background-color: #B22222; border-color: #800000; }
+.armycamp { background-color: #2E8B57; border-color: #1E5638; }
+.cannon, .npc-cannon { background-color: #808080; border-color: #505050; } /* Cannon color */
 
 
-button {
-    background-color: #5cb85c;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin: 5px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1em;
-}
+button { /* General button styling */ }
+/* ... (button styles remain same as previous) ... */
 
-button:hover {
-    background-color: #4cae4c;
-}
-
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
 
 footer {
     text-align: center;
     padding: 1em 0;
-    background-color: #333;
-    color: white;
+    background-color: #8B4513;
+    color: #F5F5DC;
     position: fixed;
     bottom: 0;
     width: 100%;
+    border-top: 3px solid #5C3317;
 }
+
+/* --- Info Panel Styles --- */
+.hidden {
+    display: none !important;
+}
+
+#info-panel { /* ... (info panel styles remain same) ... */ }
+/* ... (other info panel styles) ... */
+
+
+/* --- Attack View Styles --- */
+#attack-view {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #708090; /* SlateGray */
+    padding: 20px; box-sizing: border-box;
+    z-index: 900; overflow-y: auto; color: white;
+}
+#attack-view h2 { text-align: center; color: #FFD700; margin-top: 0; }
+
+#npc-base-area {
+    min-height: 400px;
+    background-color: #8FBC8F; /* DarkSeaGreen - more like a battlefield */
+    border: 2px solid #556B2F; /* DarkOliveGreen */
+    border-radius: 8px; padding: 10px; margin-bottom: 20px;
+    display: flex; /* Using flex for simple layout of NPC buildings for now */
+    flex-wrap: wrap;
+    gap: 10px;
+    align-content: flex-start; /* Align items from the start of the container */
+}
+
+.npc-building {
+    width: 80px; height: 80px;
+    border: 2px solid #333;
+    border-radius: 4px;
+    padding: 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 0.75em;
+    color: white; /* Default text for NPC buildings */
+    /* Background colors will be set by specific type classes like .npc-townhall */
+}
+/* Ensure NPC building type classes from JS match CSS (e.g. npc-townhall, npc-cannon) */
+
+
+#troop-deployment-bar {
+    height: 120px;
+    background-color: #8B4513;
+    border: 2px solid #5C3317;
+    border-radius: 8px; padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center if few items, or space-around if many */
+    gap: 10px; /* Space between troop buttons */
+    margin-bottom: 20px;
+    overflow-x: auto; /* Allow scrolling if many troop types */
+}
+
+.deploy-troop-selector-btn {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    background-color: #CD7F32; /* Bronze, like other buttons */
+    color: white;
+    border: 1px solid #8B4513;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.deploy-troop-selector-btn.selected { /* Style for selected troop */
+    background-color: #B8732E; /* Darker bronze */
+    outline: 2px solid #FFD700; /* Gold outline */
+}
+.deploy-troop-selector-btn:disabled {
+    background-color: #A9A9A9;
+    color: #E0E0E0;
+    cursor: not-allowed;
+}
+
+
+#attack-view button#end-attack-btn {
+    display: block; margin: 20px auto;
+    padding: 10px 20px; background-color: #DC143C; border-color: #8B0000;
+}
+#attack-view button#end-attack-btn:hover { background-color: #B22222; }
+
+
+/* General Button Styling (Build buttons, etc.) - copied from previous for completeness */
+button { background-color: #CD7F32; color: white; border: 2px solid #8B4513; padding: 12px 18px; margin: 5px; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); transition: background-color 0.2s ease-in-out, transform 0.1s ease; }
+button:hover { background-color: #B8732E; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+button:active { transform: translateY(0px); }
+button:disabled { background-color: #A9A9A9; color: #E0E0E0; border-color: #696969; cursor: not-allowed; text-shadow: none; transform: none; box-shadow: none; }
+
+/* Info Panel Styles - copied from previous for completeness */
+#info-panel { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 350px; max-height: 80vh; overflow-y: auto; background-color: #F5F5DC; border: 2px solid #A0522D; border-radius: 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.3), 0 12px 40px rgba(0,0,0,0.25); z-index: 1000; padding: 0; color: #4A3B31;}
+#info-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background-color: #E6D8AD; border-bottom: 1px solid #A0522D; border-top-left-radius: 8px; border-top-right-radius: 8px;}
+#info-panel-header h3 { margin: 0; font-size: 1.2em; color: #5C3317; }
+#info-panel-close-btn { background: none; border: none; font-size: 1.8em; font-weight: bold; color: #8B4513; padding: 0 5px; line-height: 1; text-shadow: none;}
+#info-panel-close-btn:hover { color: #5C3317; background-color: transparent; transform: none; box-shadow: none; }
+#info-panel-content { padding: 15px; line-height: 1.6; }
+#info-panel-content p { margin: 0 0 10px 0; }
+#info-panel-content p span { font-weight: bold; color: #654321; }
+#info-panel-details { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #A0522D; }
+#info-panel-actions { padding: 10px 15px; text-align: right; background-color: #E6D8AD; border-top: 1px solid #A0522D; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; display: flex; justify-content: flex-end; }
+#info-panel-actions button { padding: 8px 12px; font-size: 0.9em; margin-left: 8px; }
+#info-panel-actions button:first-child { margin-left: 0; }
+#info-panel-move-btn { /* Specifics if needed */ }

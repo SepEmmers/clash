@@ -15,6 +15,7 @@
         <div id="resource-display">
             <p>Gold: <span id="gold-amount">0</span></p>
             <p>Elixir: <span id="elixir-amount">0</span></p>
+            <p>Army: <span id="current-army-housing">0</span> / <span id="max-army-housing">0</span></p>
         </div>
 
         <div id="game-area">
@@ -27,14 +28,46 @@
         <div id="actions-panel">
             <h2>Actions</h2>
             <button id="build-town-hall-btn">Build Town Hall (Free)</button>
-            <button id="build-gold-mine-btn">Build Gold Mine (Cost: 50 Elixir)</button>
-            <button id="build-elixir-collector-btn">Build Elixir Collector (Cost: 50 Gold)</button>
+            <button id="build-gold-mine-btn">Build Gold Mine</button>
+            <button id="build-elixir-collector-btn">Build Elixir Collector</button>
+            <button id="build-barracks-btn">Build Barracks</button>
+            <button id="build-army-camp-btn">Build Army Camp</button>
+            <button id="attack-mode-btn">Attack!</button> <!-- New Attack Button -->
         </div>
     </main>
 
     <footer>
         <p>Simple Clash Game - Alpha</p>
     </footer>
+
+    <div id="info-panel" class="hidden">
+        <div id="info-panel-header">
+            <h3 id="info-panel-title">Building Info</h3>
+            <button id="info-panel-close-btn">&times;</button>
+        </div>
+        <div id="info-panel-content">
+            <p>Type: <span id="info-panel-type">N/A</span></p>
+            <p>Level: <span id="info-panel-level">N/A</span></p>
+            <div id="info-panel-details">
+                <!-- Contextual details here -->
+            </div>
+        </div>
+        <div id="info-panel-actions">
+            <button id="info-panel-move-btn">Move</button>
+            <button id="info-panel-upgrade-btn">Upgrade</button>
+        </div>
+    </div>
+
+    <div id="attack-view" class="hidden"> <!-- New Attack View Container -->
+        <h2>Attack Mode</h2>
+        <div id="npc-base-area">
+            <p>NPC Base Area - Content Coming Soon</p>
+        </div>
+        <div id="troop-deployment-bar">
+            <p>Troop Deployment Bar - Content Coming Soon</p>
+        </div>
+        <button id="end-attack-btn">End Attack (Return)</button>
+    </div>
 
     <script src="script.js"></script>
 </body>
